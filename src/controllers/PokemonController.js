@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { Pokemon } = require("../db");
 const { Type } = require("../db");
-const { where } = require('sequelize');
+const response = require('../utils/response');
 
 class PokemonController {
    constructor() {
@@ -43,10 +43,11 @@ class PokemonController {
       }));
       const allPoke = await allPokemons.concat(pokeOk);
 
-      if (!name) return res.json(allPoke);
+      if (!name) return response(res, 200, allPoke)
+
 
       const nameQuery = allPoke?.filter(e => e.name.toLowerCase() === name.toLowerCase());
-      return res.json(nameQuery);
+      return response(res, 200, nameQuery);
 
    }
 
@@ -68,7 +69,7 @@ class PokemonController {
             height: data.height,
             weight: data.weight,
          };
-         res.json(pokemonId);
+         response(res, 200, pokemonId)
       } else {
 
          const pokemonIdDb = await Pokemon.findByPk(id, {
@@ -80,18 +81,18 @@ class PokemonController {
                }
             }
          })
-         res.json(pokemonIdDb);
+         response(res, 200, pokemonIdDb);
       }
    };
 
 
    async create({ body }, res) {
       const { name, life, strength, defense, speed, height, weight, types, image } = body;
-      if (!name) return res.status(400).json({ info: "Faltan campos" });
+      if (!name) return response(res, 400, { message: "Faltan campos" });
 
       const existe = await Pokemon.findOne({ where: { name: name } });
 
-      if (existe) return res.json({ info: "El pokemon ya existe" });
+      if (existe)  return response(res, 400, { message: "El pokemon ya existe!" });
 
       const pokemon = await Pokemon.create({
          name,
@@ -114,22 +115,7 @@ class PokemonController {
             }))[0].dataValues.id
          ])
       }))
-      const relacionTablas = await Pokemon.findOne({
-         where: {
-            name: name
-
-         }
-         ,
-         include: {
-            model: Type,
-            attributes: ["name"],
-            through: {
-               attributes: []
-            }
-         }
-      })
-      res.status(200).json({ message: `Pokemon creado` });
-      return relacionTablas;
+      response(res, 200, { message: "Pokemon Creado" });
    }
 
    async edit(req, res) {
@@ -137,14 +123,14 @@ class PokemonController {
       const { body } = req;
 
       await Pokemon.update(body, { where: { id: id } });
-      res.json({ message: "Pokemon editado correctamente" })
+      response(res, 200, { message: "Pokemon editado correctamente" });
    };
 
    async delete({ params }, res) {
       const { id } = params;
 
       await Pokemon.destroy({ where: { id } });
-      res.json({ message: "Pokemon eliminado correctamente" });
+      response(res, 200, { message: "Pokemon eliminado" });
 
 
    }
