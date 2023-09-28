@@ -5,7 +5,7 @@ const TypesController = require('../controllers/TypesControllers');
 
 const router = Router();
 router.get("/pokemons", pokemon.getAll);
-router.get("/pokemons/:id", pokemon.getOne);
+router.get("/pokemon/:id", pokemon.getOne);
 router.get("/type", TypesController.getAll);
 router.post("/pokemons", pokemon.create);
 router.patch("/pokemons/:id", pokemon.edit);

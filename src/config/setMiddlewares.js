@@ -4,8 +4,8 @@ const cors = require('cors');
 const { NODE_ENV } = require('./envs');
 
 module.exports = (server) => {
-   server.use(urlencoded({ extended: true, limit: '50mb' }));
-   server.use(json({ limit: '50mb' }));
+   server.use(urlencoded({ extended: true }));
+   server.use(json());
    server.use(cors());
    NODE_ENV == "development" && server.use(morgan("dev"));
    server.use((req, res, next) => {
